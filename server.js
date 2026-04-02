@@ -8,15 +8,20 @@ const app = express();
 // middleware
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://blogbackend-b9fy.onrender.com",
+  "https://blog1-gold-phi.vercel.app",
+  "https://blogbackend-b9fy.onrender.com"
 ];
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://blog1-gold-phi.vercel.app" // ✅ your frontend
-  ],
+  origin: allowedOrigins,
   credentials: true
 }));
+app.options("*", cors({ origin: allowedOrigins, credentials: true }));
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  next();
+});
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
@@ -103,6 +108,10 @@ app.put("/updateRole/:id", async (req, res) => {
 // ============== HEALTH CHECK ==============
 app.use('/health', (req, res) => {
   res.status(200).json({ message: "Server is healthy" });
+});
+
+app.get('/', (req, res) => {
+  res.status(200).send('Blog backend is running');
 });
  
 /* ===== BLOG ROUTES ===== */
