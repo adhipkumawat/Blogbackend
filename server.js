@@ -90,7 +90,11 @@ app.put("/updateRole/:id", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
+// ============== HEALTH CHECK ==============
+app.use('/health', (req, res) => {
+  res.status(200).json({ message: "Server is healthy" });
+});
+ 
 /* ===== BLOG ROUTES ===== */
 const blogRoutes = require("./Blogcall");
 app.use("/api", blogRoutes);
