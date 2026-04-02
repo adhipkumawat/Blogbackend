@@ -7,13 +7,11 @@ const jwt = require("jsonwebtoken");
 const app = express();
 
 // middleware
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://blogbackend-b9fy.onrender.com",
-];
 app.use(cors({
-  origin:allowedOrigins,
-  credentials: true
+  origin: true,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
