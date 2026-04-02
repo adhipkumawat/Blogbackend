@@ -6,12 +6,22 @@ const jwt = require("jsonwebtoken");
 const app = express();
 
 // middleware
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://blogbackend-b9fy.onrender.com",
+];
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://blog1-gold-phi.vercel.app" // ✅ your frontend
+  ],
+  credentials: true
+}));
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 /* ===== MONGODB CONNECTION ===== */
-mongoose.connect("mongodb://127.0.0.1:27017/myAppDB")
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.log(err));
 
@@ -100,4 +110,5 @@ const blogRoutes = require("./Blogcall");
 app.use("/api", blogRoutes);
 
 /* ===== START SERVER ===== */
-app.listen(5000, () => console.log("Server running on port 5000"));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
