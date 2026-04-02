@@ -15,7 +15,7 @@ app.use(cors({
   origin: allowedOrigins,
   credentials: true
 }));
-app.options("/*", cors({ origin: allowedOrigins, credentials: true }));
+app.options(/.*/, cors({ origin: allowedOrigins, credentials: true }));
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
