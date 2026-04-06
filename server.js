@@ -6,11 +6,14 @@ const jwt = require("jsonwebtoken");
 const cors = require("cors");
 require("dotenv").config();
 
+// const MONGO_URI = process.env.MONGO_URI
+
 const app = express();
 
 // ===== IMPORTS =====
 const blogRoutes = require("./Blogcall"); // your blog routes
 const User = require("./models/user");    // user model
+const user = require("./models/user");
 
 // ===== MIDDLEWARE =====
 app.use(cors({
@@ -71,27 +74,12 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Wrong password" });
     }
 
-    // Create name from firstname+lastname, fallback to email prefix
-    let name = '';
-    if (user.firstname && user.lastname) {
-      name = (user.firstname + ' ' + user.lastname).trim();
-    } else if (user.firstname) {
-      name = user.firstname.trim();
-    } else if (user.lastname) {
-      name = user.lastname.trim();
-    } else {
-      // Fallback: use email prefix
-      name = email.split('@')[0] || 'User';
-    }
-
     const token = jwt.sign(
       {
         id: user._id,
         role: user.role,
         email: user.email,
-        name: name,
-        firstname: user.firstname || '',
-        lastname: user.lastname || ''
+        name: user.firstname + " " + user.lastname
       },
       "SECRETKEY123",
       { expiresIn: "1d" }
@@ -131,32 +119,6 @@ app.put("/updateRole/:id", async (req, res) => {
     await User.findByIdAndUpdate(req.params.id, { role: newRole });
 
     res.json({ message: "Role updated successfully" });
-
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// ===== UPDATE USER PROFILE =====
-app.put("/api/users/update", async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ message: "No token provided" });
-    }
-
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, "SECRETKEY123");
-
-    const { firstname, lastname, avatar } = req.body;
-
-    const updatedUser = await User.findByIdAndUpdate(
-      decoded.id,
-      { firstname, lastname, avatar },
-      { new: true }
-    );
-
-    res.json({ message: "Profile updated successfully", user: updatedUser });
 
   } catch (err) {
     res.status(500).json({ message: err.message });
